@@ -1,42 +1,70 @@
 import express from "express";
 import db from "./db.js";
-
+import userRoutes from "./routes/user.js"
+import Redis from "ioredis";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
+app.use(express.json());
 
+const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
+  
+  
 });
+
+app.get("/redis", async (req, res) => {
+  try {
+    const reply = await redis.ping();
+    console.log("Redis ping response:", reply);
+    res.status(200).json({ message: "Redis is working", reply });
+  } catch (error) {
+    console.error("Error connecting to Redis:", error);
+    res.status(500).json({ message: "Error connecting to Redis" });
+  }
+});
+
+app.get("/sql-test", async (req, res) => {
+  try {
+    const result = await db.raw("SELECT 1 + 1 AS result");
+
+    res.status(200).json({
+      success: true,
+      message: "MySQL Connected Successfully",
+      data: result,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
+app.use('/traveller', userRoutes);
 
 app.get("/traveller", async (req, res) => {
   try {
-  const [result] =await db.raw("select * from traveller");
-  res.status(201).json(
-   { success: true,
-    data: result}
-  )   } 
+    const [result] = await db.raw("select * from traveller");
+    res.status(201).json(
+      {
+        success: true,
+        data: result
+      }
+    )
+  }
 
-catch (error) {
-console.log("Error fetching traveller:", error);
-res.status(500).json({ message: "Error fetching traveller" });
-}
+  catch (error) {
+    console.log("Error fetching traveller:", error);
+    res.status(500).json({ message: "Error fetching traveller" });
+  }
 })
 
-app.post("/traveller",async (req, res) => {
-   try { 
-  const result =await  db.raw("insert  into traveller (name,age,phone) values(?, ?, ?)", ['John Doe', 30, '1234567890']);
 
-  if (result) {
-    res.status(201).json({ message: "Traveller added successfully",
-        status: 201,
-     });
-  }
-} catch (error) {
-  console.error("Error adding traveller:", error);
-  res.status(500).json({ message: "Error adding traveller" });
-}
-});
 
 app.listen(8003, () => {
   console.log("Server is running on port 8003");
