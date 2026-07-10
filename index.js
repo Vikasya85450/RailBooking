@@ -27,23 +27,6 @@ app.get("/redis", async (req, res) => {
   }
 });
 
-app.get("/sql-test", async (req, res) => {
-  try {
-    const result = await db.raw("SELECT 1 + 1 AS result");
-
-    res.status(200).json({
-      success: true,
-      message: "MySQL Connected Successfully",
-      data: result,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
-  }
-});
 
 app.use('/traveller', userRoutes);
 

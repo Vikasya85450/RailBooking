@@ -81,3 +81,29 @@ export const getUser = async  (req, res) => {
     res.status(500).json({ message: "Error fetching traveller" });
   }
 }
+import db from "../config/db.js";
+
+export const postProfile = async (req, res) => {
+  try {
+    const { dob, address, age } = req.body;
+
+    console.log(req.body);
+
+    await db.raw(
+      "INSERT INTO Profile (dob, address, age) VALUES (?, ?, ?)",
+      [dob, address, age]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Profile inserted successfully",
+    });
+  } catch (error) {
+    console.error("Error inserting profile:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
