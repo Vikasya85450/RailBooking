@@ -1,13 +1,18 @@
 import knex from "knex";
- 
- const db = knex ({
-    client: 'mysql2',
+
+const db = knex({
+    client: "mysql2",
     connection: {
-        host: '127.0.0.1',
-        port: 3306,
-        user: 'root',
-        password: '',
-        database: 'Railways'
+        host: "127.0.0.1",
+        port: 3308,
+        user: "root",
+        password: "root123",
+        database: "Railways",
+    },
+    pool: {
+        min: 2,
+        max: 10,
     },
 });
+
 export default db;

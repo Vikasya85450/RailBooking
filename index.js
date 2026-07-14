@@ -1,19 +1,24 @@
 import express from "express";
 import db from "./db.js";
-import userRoutes from "./routes/user.js"
+import userRoutes from "./routes/user.js";
+import adminRoutes from "./routes/admin.js";
+import cookieParser from "cookie-parser";
+import authMiddleware from "./utils/auth.middleware.js";
 import Redis from "ioredis";
 import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
+
 
 const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
-  
-  
+
+
 });
 
 app.get("/redis", async (req, res) => {
@@ -28,7 +33,8 @@ app.get("/redis", async (req, res) => {
 });
 
 
-app.use('/traveller', userRoutes);
+app.use('/user', userRoutes);
+app.use('/admin', adminRoutes);
 
 app.get("/traveller", async (req, res) => {
   try {
@@ -51,4 +57,4 @@ app.get("/traveller", async (req, res) => {
 
 app.listen(8003, () => {
   console.log("Server is running on port 8003");
-})
+}) 
