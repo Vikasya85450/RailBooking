@@ -2,6 +2,8 @@ import express from "express";
 import db from "./db.js";
 import userRoutes from "./routes/user.js";
 import adminRoutes from "./routes/admin.js";
+import trainRouter from "./routes/train.js";
+
 import cookieParser from "cookie-parser";
 import authMiddleware from "./utils/auth.middleware.js";
 import Redis from "ioredis";
@@ -35,6 +37,7 @@ app.get("/redis", async (req, res) => {
 
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
+app.use('/train', trainRouter);
 
 app.get("/traveller", async (req, res) => {
   try {
